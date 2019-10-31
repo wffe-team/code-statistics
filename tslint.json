@@ -1,0 +1,52 @@
+{
+  "defaultSeverity": "warning",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "linterOptions": {
+    "exclude": [
+      "node_modules/**"
+    ]
+  },
+  "rules": {
+    // 必须使用单引
+    "quotemark": [true, "single"],
+    // 一个缩进必须用两个空格替代
+    "indent": [true, "spaces", 2],
+    // 接口名是否需要以‘i’开头
+    "interface-name": false,
+    // 是否要求导入语句是按字母顺序排列并分组的
+    "ordered-imports": false,
+    // 是否检查对象文字中键的排序
+    "object-literal-sort-keys": false,
+    // 是否禁止连续超过三行空行
+    "no-consecutive-blank-lines": false,
+    // 必须使用 === 或 !==，禁止使用 == 或 !=，与 null 比较时除外
+    "triple-equals": true,
+    // 行尾必须有分号
+    "semicolon": [
+      true,
+      "always",
+      "ignore-interfaces"
+    ],
+    //不允许使用var module = require("module"),用 import foo = require('foo')导入
+    "no-var-requires": false,
+    // 最大字符数限制
+    "max-line-length": [ false ],
+    // 是否可用console
+    "no-console": [
+      false
+    ],
+    "trailing-comma": [true, { 
+      // 对尾随逗号的校验 
+      "multiline": { 
+        "objects": "never", 
+        "arrays": "never", 
+        "functions": "never", 
+        "typeLiterals": "ignore" 
+      }, 
+      "esSpecCompliant": true 
+      // 是否允许尾随逗号出现在剩余变量中 
+    }]
+  }
+}
