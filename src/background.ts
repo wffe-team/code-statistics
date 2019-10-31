@@ -41,29 +41,29 @@ function createWindow() {
     linesNum = 0;
     const allPath: any = [];
     const filePath = opt.path;
-    const ignoreFile = opt.file;
-    const ignorePath = opt.folder;
-    const ignoreFormat = opt.format;
+    const ignoreFiles = opt.file ? opt.file.split(',') : [];
+    const ignorePaths = opt.folder ? opt.folder.split(',') : [];
+    const ignoreFormats = opt.format ? opt.format.split(',') : [];
     const readFile = (path: string) => {
       fs.readdir(path, (err: any, files: any) => {
         for (let i = 0 ; i < files.length ; i++) {
           fs.stat(path + '\\' + files[i], (error: any, stats: any) => {
             // 如果是文件夹递归
             if (stats.isDirectory()) {
-              if (ignorePath !== files[i]) {
+              if (ignorePaths.indexOf(files[i]) === -1) {
                 readFile(path + '\\' + files[i]);
               }
             } else {
               // 如果是文件则根据规则过滤文件
-              if (files[i] !== ignoreFile) {
+              if (ignoreFiles.indexOf(files[i]) === -1) {
                 const filesFormatList = files[i].split('.');
                 const format = filesFormatList[filesFormatList.length - 1];
-                if (format !== ignoreFormat && (`.${format}` !== ignoreFormat)) {
+                const format2 = '.' + format;
+                if (ignoreFormats.indexOf(format) === -1 && ignoreFormats.indexOf(format2) === -1) {
                   allPath.push(path + '\\' + files[i]);
                   countLines(event, path + '\\' + files[i], opt);
                 }
               }
-              // console.log(allPath);
             }
           });
         }
