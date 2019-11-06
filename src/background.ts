@@ -5,8 +5,8 @@ import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib';
-import { dialog, ipcMain } from 'electron';
-const fs = require('fs');
+import registerMess from './electron/registerMess';
+
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -19,97 +19,12 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 800, height: 600, webPreferences: {
+    webSecurity: false,
     nodeIntegration: true
   } });
 
-  let linesNum = 0;
-  // 检测路径是否正确
-  const checkValue = (opt: any) => {
-    if (!fs.existsSync(opt.path)) {
-      return {
-        state: false,
-        mess: '文件夹路径错误！'
-      };
-    }
-    return {
-      state: true,
-      mess: '数据正确！'
-    };
-  };
-  // 读取路径下所有文件
-  const getAllFiles = (event: any, opt: any) => {
-    linesNum = 0;
-    const allPath: any = [];
-    const filePath = opt.path;
-    const ignoreFiles = opt.file ? opt.file.split(',') : [];
-    const ignorePaths = opt.folder ? opt.folder.split(',') : [];
-    const ignoreFormats = opt.format ? opt.format.split(',') : [];
-    const readFile = (path: string) => {
-      fs.readdir(path, (err: any, files: any) => {
-        for (let i = 0 ; i < files.length ; i++) {
-          fs.stat(path + '\\' + files[i], (error: any, stats: any) => {
-            // 如果是文件夹递归
-            if (stats.isDirectory()) {
-              if (ignorePaths.indexOf(files[i]) === -1) {
-                readFile(path + '\\' + files[i]);
-              }
-            } else {
-              // 如果是文件则根据规则过滤文件
-              if (ignoreFiles.indexOf(files[i]) === -1) {
-                const filesFormatList = files[i].split('.');
-                const format = filesFormatList[filesFormatList.length - 1];
-                const format2 = '.' + format;
-                if (ignoreFormats.indexOf(format) === -1 && ignoreFormats.indexOf(format2) === -1) {
-                  allPath.push(path + '\\' + files[i]);
-                  countLines(event, path + '\\' + files[i], opt);
-                }
-              }
-            }
-          });
-        }
-      });
-    };
-    readFile(filePath);
-  };
-  // 计算文件内行数
-  function countLines(event: any, path: string, opt: any) {
-    const isNotes = opt.isNotes;
-    let rep = fs.readFileSync(path);
-    rep = rep.toString();
-    let linesArr = rep.split('\n');
-    let lines = [];
-    if (isNotes) {
-      lines = linesArr;
-    } else {
-      for (let i = 0; i < linesArr.length; i++) {
-        if (linesArr[i].indexOf('//') !== 0) {
-          lines.push(linesArr[i]);
-        }
-      }
-    }
-    linesNum += lines.length;
-    event.sender.send('countResult', linesNum);
-  }
-  // 绑定打开对话框事件
-  ipcMain.on('openDialog', (event, arg) => {
-    dialog.showOpenDialog((mainWindow as any), {
-      // 将 properties 设置为["openFile"、"openDirectory"], 则将显示为目录选择器。
-      properties: ['openFile', 'openDirectory']
-    }).then((result: any) => {
-      event.sender.send('selectedFolder', result.filePaths[0]);
-    }).catch((err: any) => {
-      console.log(err);
-    });
-  });
-  // 开始统计代码
-  ipcMain.on('startStatistics', (event, arg) => {
-    const opt = JSON.parse(arg);
-    const checkRes = checkValue(opt);
-    if (!checkRes.state) {
-      event.sender.send('formError', checkRes.mess);
-    }
-    getAllFiles(event, opt);
-  });
+  // 初始化注册消息
+  registerMess.init(mainWindow);
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode

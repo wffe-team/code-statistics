@@ -12,6 +12,9 @@ export default {
   name: 'home',
   components: {
     Statistics
+  },
+  mounted() {
+    console.log('home');
   }
 };
 </script>

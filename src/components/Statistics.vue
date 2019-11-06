@@ -53,6 +53,7 @@ export default class Statistics extends Vue {
     ipcRenderer.send('startStatistics', JSON.stringify(this.form));
   }
   public created() {
+    console.log('Statistics');
     ipcRenderer.on('selectedFolder', (event, arg) => {
       console.log(arg);
       this.form.path = arg;

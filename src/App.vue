@@ -1,11 +1,21 @@
 <template>
   <div id="app">
     <div class="header">
-      <h1>代码统计工具</h1>
+      <h1>代码统计工具2</h1>
     </div>
     <router-view/>
   </div>
 </template>
+
+<script>
+
+export default {
+  name: 'app',
+  mounted() {
+    console.log('app');
+  }
+};
+</script>
 
 <style lang="scss">
 #app {
