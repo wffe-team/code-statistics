@@ -34,9 +34,10 @@
 <script lang="ts">
 // @ is an alias to /src
 // import Statistics from '@/components/Statistics.vue';
+import Vue from 'vue';
 import {ipcRenderer} from 'electron';
 
-export default {
+export default Vue.extend({
   name: 'statistics',
   data() {
     return {
@@ -48,7 +49,7 @@ export default {
         isNotes: true
       },
       lineNum: 0
-    }
+    };
   },
   methods: {
     // 选择文件夹
@@ -61,18 +62,18 @@ export default {
     }
   },
   mounted() {
-    ipcRenderer.on('selectedFolder', (event, arg) => {
+    ipcRenderer.on('selectedFolder', (event, arg: string) => {
       console.log(arg);
       this.form.path = arg;
     });
-    ipcRenderer.on('formError', (event, arg) => {
+    ipcRenderer.on('formError', (event, arg: string) => {
       alert(arg);
     });
-    ipcRenderer.on('countResult', (event, arg) => {
-      this.lineNum = arg;
+    ipcRenderer.on('countResult', (event, arg: string) => {
+      this.lineNum = Number(arg);
     });
   }
-};
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

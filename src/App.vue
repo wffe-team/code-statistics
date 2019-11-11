@@ -51,8 +51,9 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 
-export default {
+export default Vue.extend({
   name: 'app',
   data() {
     return {
@@ -71,7 +72,7 @@ export default {
   mounted() {
     console.log('app');
   }
-};
+});
 </script>
 
 <style lang="scss">
