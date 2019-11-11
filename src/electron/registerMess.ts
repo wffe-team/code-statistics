@@ -1,6 +1,6 @@
 import { dialog, ipcMain } from 'electron';
 import codeStatistics from './codeStatistics';
- 
+
 function init(mainWindow: any) {
   /*
   代码统计相关消息start
@@ -29,7 +29,7 @@ function init(mainWindow: any) {
   代码统计相关消息start
   */
 }
- 
+
 export default {
   init
-}
+};
