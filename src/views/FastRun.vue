@@ -131,11 +131,16 @@ export default Vue.extend({
       }
       return stateName;
     },
+    // 修改弹窗状态
+    changeShowDialog(mark: boolean) {
+      this.isShowPopup = mark;
+    },
     // 添加本地项目
     createProject() {
       (this.$refs.localProjectForm as any).validate((valid: any) => {
         if (valid) {
           ipcRenderer.send('writeLocalProject', JSON.stringify(this.localProjectForm));
+          this.changeShowDialog(false);
         }
       });
     },
