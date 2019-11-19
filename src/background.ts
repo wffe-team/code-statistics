@@ -6,6 +6,7 @@ import {
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib';
 import registerMess from './electron/registerMess';
+import fastRun from './electron/fastRun';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -40,6 +41,7 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+    fastRun.killAll();
   });
 }
 
@@ -50,6 +52,7 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+  fastRun.killAll();
 });
 
 app.on('activate', () => {
