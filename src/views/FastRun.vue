@@ -1,6 +1,6 @@
 <template>
   <div class="fastRun">
-    <el-button type="primary" @click="importProject()" style="margin: 40px 0 60px 0;" round>导入本地项目</el-button>
+    <el-button type="primary" v-loading.fullscreen.lock="loading" element-loading-text="正在启动请稍后" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" @click="importProject()" style="margin: 40px 0 60px 0;" round>导入本地项目</el-button>
     <el-table :data="projectList" :border="true" v-loading="listLoading" scope="scope" style="width: 100%;">
       <el-table-column property="projectName" label="项目名称" header-align="center"></el-table-column>
       <el-table-column property="projectPath" label="项目路径" align="center" header-align="center"></el-table-column>
@@ -21,10 +21,10 @@
       <el-table-column property="" label="操作" width="170" align="center" header-align="center">
         <template slot-scope="scope">
           <div>
-            <el-button type="text">删除</el-button>
-            <el-button @click="runServer(scope.row.projectPath)" type="text">运行</el-button>
-            <el-button type="text">打包</el-button>
-            <el-button @click="stopLocalProject(scope.row.pid)" type="text">停止</el-button>
+            <el-button :disabled="scope.row.state!='sleeping'" @click="delLocalProject(scope.row.projectPath)" type="text">删除</el-button>
+            <el-button :disabled="scope.row.state!='sleeping'" @click="runServer(scope.row.projectPath)" type="text">运行</el-button>
+            <el-button :disabled="scope.row.state=='waiting'" @click="runBuild(scope.row.projectPath)" type="text">打包</el-button>
+            <el-button :disabled="scope.row.state!='running'" @click="stopLocalProject(scope.row.pid)" type="text">停止</el-button>
           </div>
         </template>
       </el-table-column>
@@ -68,6 +68,7 @@ export default Vue.extend({
     return {
       projectList: [],
       listLoading: false,
+      loading: false,
       isShowPopup: false,
       $refs: {
         localProjectForm: Form
@@ -147,22 +148,31 @@ export default Vue.extend({
     // 本地运行
     runServer(path: string) {
       ipcRenderer.send('runServer', path);
+      this.loading = true;
+    },
+    runBuild(path: string) {
+      ipcRenderer.send('runBuild', path);
+      this.loading = true;
     },
     // 停止本地运行
     stopLocalProject(pid: any) {
       ipcRenderer.send('stopLocalProject', pid);
+    },
+    // 删除
+    delLocalProject(path: string) {
+      ipcRenderer.send('delLocalProject', path);
     }
   },
   mounted() {
     ipcRenderer.send('readLocalProject');
     ipcRenderer.on('localProject', (event, project: string) => {
-      console.log(project);
       this.projectList = JSON.parse(project).project;
-      console.log(this.projectList);
     });
     ipcRenderer.on('selectedFolder', (event, arg: string) => {
-      console.log(arg);
       this.localProjectForm.projectPath = arg;
+    });
+    ipcRenderer.on('runServerEnd', (event) => {
+      this.loading = false;
     });
   }
 });

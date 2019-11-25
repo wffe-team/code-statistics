@@ -51,13 +51,21 @@ function init(mainWindow: any) {
   ipcMain.on('writeLocalProject', (event, arg) => {
     fastRun.writeLocalProject(event, arg);
   });
-  // 导入本地项目
+  // 运行本地项目
   ipcMain.on('runServer', (event, arg) => {
     fastRun.runLocalProject(event, arg);
+  });
+  // 构建本地项目
+  ipcMain.on('runBuild', (event, arg) => {
+    fastRun.buildLocalProject(event, arg);
   });
   // 停止本地项目
   ipcMain.on('stopLocalProject', (event, arg) => {
     fastRun.stopLocalProject(event, arg);
+  });
+  // 删除本地项目
+  ipcMain.on('delLocalProject', (event, arg) => {
+    fastRun.delLocalProject(event, arg);
   });
   /*
   本地运行end
